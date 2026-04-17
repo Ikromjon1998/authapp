@@ -1283,12 +1283,12 @@
             "dist": {
                 "type": "path",
                 "url": "../nativephp-mobile-social-auth",
-                "reference": "230313a191e3381712eabb60f65839eddf9985f6"
+                "reference": "1887d9bd67d03f63a1de51c940fd71f2adad58d4"
             },
             "require": {
                 "illuminate/support": "^11.0|^12.0|^13.0",
                 "nativephp/mobile": "^3.0",
-                "php": "^8.2"
+                "php": "^8.3"
             },
             "require-dev": {
                 "laravel/pint": "^1.0",
@@ -1321,6 +1321,12 @@
             },
             "license": [
                 "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Ikromjon Ochilov",
+                    "email": "ikromjon98.98@icloud.com"
+                }
             ],
             "description": "Native Apple Sign-In and Google Sign-In for NativePHP mobile apps",
             "keywords": [

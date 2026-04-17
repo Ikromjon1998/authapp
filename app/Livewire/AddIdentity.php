@@ -80,26 +80,60 @@ class AddIdentity extends Component
     }
 
     #[OnNative(AppleSignInCompleted::class)]
-    public function onAppleSignIn($data = [])
-    {
+    public function onAppleSignIn(
+        string $userId = '',
+        ?string $identityToken = null,
+        ?string $authorizationCode = null,
+        ?string $email = null,
+        ?string $givenName = null,
+        ?string $familyName = null,
+    ) {
         $this->loading = false;
+
+        if (! empty($userId)) {
+            $identity = [
+                'provider' => 'apple',
+                'userId' => $userId,
+                'identityToken' => $identityToken ?? '',
+                'authorizationCode' => $authorizationCode ?? '',
+                'email' => $email ?? '',
+                'givenName' => $givenName ?? '',
+                'familyName' => $familyName ?? '',
+                'displayName' => trim(($givenName ?? '') . ' ' . ($familyName ?? '')),
+                '_nonce' => session('auth_nonce', ''),
+                '_signedInAt' => now()->toIso8601String(),
+            ];
+
+            $identities = session('identities', []);
+            $identities[] = $identity;
+            session(['identities' => $identities]);
+
+            return $this->redirect('/identities');
+        }
     }
 
     #[OnNative(GoogleSignInCompleted::class)]
-    public function onGoogleSignIn($data = [])
-    {
+    public function onGoogleSignIn(
+        string $userId = '',
+        ?string $identityToken = null,
+        ?string $email = null,
+        ?string $displayName = null,
+        ?string $givenName = null,
+        ?string $familyName = null,
+        ?string $photoUrl = null,
+    ) {
         $this->loading = false;
 
-        if (! empty($data)) {
+        if (! empty($userId)) {
             $identity = [
                 'provider' => 'google',
-                'userId' => $data['userId'] ?? '',
-                'identityToken' => $data['identityToken'] ?? '',
-                'email' => $data['email'] ?? '',
-                'displayName' => $data['displayName'] ?? '',
-                'givenName' => $data['givenName'] ?? '',
-                'familyName' => $data['familyName'] ?? '',
-                'photoUrl' => $data['photoUrl'] ?? '',
+                'userId' => $userId,
+                'identityToken' => $identityToken ?? '',
+                'email' => $email ?? '',
+                'displayName' => $displayName ?? '',
+                'givenName' => $givenName ?? '',
+                'familyName' => $familyName ?? '',
+                'photoUrl' => $photoUrl ?? '',
                 '_nonce' => session('auth_nonce', ''),
                 '_signedInAt' => now()->toIso8601String(),
             ];
@@ -113,12 +147,14 @@ class AddIdentity extends Component
     }
 
     #[OnNative(SignInFailed::class)]
-    public function onSignInFailed($data = [])
-    {
+    public function onSignInFailed(
+        string $provider = '',
+        string $error = '',
+        ?string $errorCode = null,
+    ) {
         $this->loading = false;
-        $errorCode = $data['errorCode'] ?? '';
         if ($errorCode !== 'CANCELED') {
-            $this->error = $data['error'] ?? 'Sign-in failed. Please try again.';
+            $this->error = ! empty($error) ? $error : 'Sign-in failed. Please try again.';
         }
     }
 
